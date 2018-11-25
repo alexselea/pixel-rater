@@ -1,5 +1,6 @@
 import requests, json
 import shutil
+import pickle
 from urllib.request import urlopen
 import os
 
@@ -13,18 +14,26 @@ def places(place_to_search):
     #the static url part of a text search query
     url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
 
-    #read the name of the location
-    query = place_to_search
+
+
     #the actual request
-    r = requests.get(url + 'query=' + query + '&key=' + API_KEY)
+    r = requests.get(url + 'query=' + place_to_search + '&key=' + API_KEY)
     #convert it to a json
     x = r.json()
     #and access the results field
     y = x['results']
     #used for numbering the photos
     no = 1
+
+    print("we did it")
+    query = y[0]['name'].replace(' ', '_')
+
+    if os.path.exists('./sorted_descending/' + query):
+         with open('./sorted_descending/' + query, 'rb') as fin:
+             sorted_list = pickle.load(fin)
+             return sorted_list
+
     #only analyze the first result, can be modified by replacing range(1)
-    query = query.replace(' ', '_')
     if os.path.exists('photos/' + query) == 0:
         os.mkdir('photos/' + query)
 
@@ -51,13 +60,14 @@ def places(place_to_search):
             photo_r = requests.get(photo_url +  'photoreference=' + photo_reference + '&maxwidth=' + str(width) +'&key=' + API_KEY)
             final_url = photo_url +  'photoreference=' + photo_reference + '&maxwidth=' + str(width) +'&key=' + API_KEY
             filename = "./photos/" + query + "/" + query + '_' + str(no) + '_image.jpg'
+            print(filename)
             no = no + 1
             f = open(filename, 'wb')
             #requesting the actual photo
             f.write(urlopen(final_url).read())
             f.close()
 
-    print(run(place_to_search))
+    return run(query)
     
 
 
