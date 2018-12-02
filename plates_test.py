@@ -10,7 +10,7 @@ from predict import run
 
 def places(place_to_search):
     #private api ley
-    API_KEY = 'AIzaSyDYgibuTAoQCBSQGRlR3UlHSy_vW00Q_yo'
+    API_KEY = ''
     #the static url part of a text search query
     url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
 
